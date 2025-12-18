@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 
+# carlos
 class SampleResultSerializer(serializers.Serializer):
     indicator = serializers.CharField(max_length=100)
     method = serializers.CharField(
