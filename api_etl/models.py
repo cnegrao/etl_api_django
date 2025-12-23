@@ -1,3 +1,5 @@
+import secrets
+
 from django.db import models
 from django.utils import timezone
 
@@ -80,3 +82,26 @@ class ETLStageSampleIntakeValue(models.Model):
 
     def __str__(self):
         return f"{self.indicator_code}: {self.value_numeric or self.value_text}"
+
+
+class APIKey(models.Model):
+    """
+    Armazena chaves de API para autenticação dos parceiros.
+    """
+    name = models.CharField(max_length=100, unique=True)
+    key = models.CharField(max_length=128, unique=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    allowed_ips = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        db_table = "etl_apikey"
+
+    def __str__(self):
+        return f"{self.name} ({'ativo' if self.is_active else 'inativo'})"
+
+    @staticmethod
+    def generate_key():
+        """Gera uma nova chave segura."""
+        return secrets.token_hex(32)

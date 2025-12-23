@@ -73,13 +73,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "etl_api.wsgi.application"
 
-# Database do Django (admin, auth etc.) – pode manter sqlite mesmo
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # Nome padrão do Supabase
+        'USER': 'postgres',  # Usuário mostrado no painel
+        'PASSWORD': 'dbadmin2025!',  # Copie do Supabase → Project Settings → Database
+        'HOST': 'aws-0-sa-east-1.pooler.supabase.com',  # Host do Supabase
+        'PORT': '5432',
+        # obrigatório para conexões Supabase
+        'OPTIONS': {'sslmode': 'require'},
     }
 }
+
 
 # Validação de senha
 AUTH_PASSWORD_VALIDATORS = [
@@ -96,6 +102,15 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'api_etl.authentication.APIKeyAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 # Internacionalização
 LANGUAGE_CODE = "pt-br"

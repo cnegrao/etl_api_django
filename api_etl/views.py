@@ -5,9 +5,11 @@ import psycopg2
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .authentication import APIKeyAuthentication
 from .serializers import BatchSerializer
 
 # -------------------------------------------------------
@@ -31,6 +33,8 @@ def to_json(data) -> str:
 
 
 class ReceiveBatchView(APIView):
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
     """
     Endpoint principal: POST /api/v1/lab-intake/batch/
     Recebe um lote de amostras e grava em:
