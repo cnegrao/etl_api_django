@@ -76,15 +76,16 @@ WSGI_APPLICATION = "etl_api.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # Nome padrão do Supabase
-        'USER': 'postgres',  # Usuário mostrado no painel
-        'PASSWORD': 'dbadmin2025!',  # Copie do Supabase → Project Settings → Database
-        'HOST': 'aws-0-sa-east-1.pooler.supabase.com',  # Host do Supabase
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'dbadmin2025!',
+        'HOST': 'db.eeuzmrjnzuhecyhbxcxe.supabase.co',  # copie do painel Supabase
         'PORT': '5432',
-        # obrigatório para conexões Supabase
         'OPTIONS': {'sslmode': 'require'},
     }
 }
+
+# PG_URL=postgresql+psycopg2://postgres.eeuzmrjnzuhecyhbxcxe:dbadmin2025!@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
 
 
 # Validação de senha
