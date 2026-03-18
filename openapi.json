@@ -1,0 +1,376 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/lab-intake/batch/:
+    post:
+      operationId: api_v1_lab_intake_batch_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Batch'
+            examples:
+              ExemploDePayloadBatch:
+                value:
+                  partner_id: 10
+                  partner_batch_id: BATCH-TEST-20260313-001
+                  samples:
+                  - partner_record_id: REC-0001
+                    sample_code: SAMPLE-0001
+                    sampling_date: '2026-03-12'
+                    year: 2026
+                    stage: 1
+                    lab_number: LAB-12345
+                    company_external_code: COMP-001
+                    laboratory_external_code: LABEXT-001
+                    trial_external_code: TRIAL-001
+                    extra:
+                      farm: Fazenda Teste
+                      city: Brasília
+                      source: manual_test
+                    results:
+                    - indicator: pH
+                      method: EPA-9045
+                      unit: pH
+                      value_numeric: 6.5
+                      value_text: ''
+                      extra:
+                        remark: resultado preliminar
+                    - indicator: Organic Matter
+                      method: Walkley-Black
+                      unit: '%'
+                      value_numeric: 3.2
+                      value_text: ''
+                      extra:
+                        replicate: 1
+                  - partner_record_id: REC-0002
+                    sample_code: SAMPLE-0002
+                    sampling_date: '2026-03-11'
+                    year: 2026
+                    stage: 2
+                    lab_number: LAB-12346
+                    company_external_code: COMP-001
+                    laboratory_external_code: LABEXT-001
+                    trial_external_code: TRIAL-002
+                    extra:
+                      farm: Fazenda Teste 2
+                      city: Goiânia
+                    results:
+                    - indicator: Potassium
+                      method: Mehlich-1
+                      unit: mg/dm3
+                      value_numeric: 82.4
+                      value_text: null
+                      extra:
+                        status: ok
+                    - indicator: Observation
+                      method: null
+                      unit: null
+                      value_numeric: null
+                      value_text: Amostra com coloração escura
+                      extra:
+                        analyst_note: texto livre
+                summary: Exemplo completo de envio
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Batch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Batch'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: RECEIVED
+                  internal_batch_id:
+                    type: integer
+                    example: 123
+                  partner_batch_id:
+                    type: string
+                    example: BATCH-TEST-20260313-001
+                  received_samples:
+                    type: integer
+                    example: 2
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ERROR
+                  errors:
+                    type: object
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ERROR
+                  message:
+                    type: string
+                    example: 'Erro inesperado: detalhe do erro'
+          description: ''
+components:
+  schemas:
+    Batch:
+      type: object
+      properties:
+        partner_id:
+          type: integer
+        partner_batch_id:
+          type: string
+          maxLength: 100
+        samples:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sample'
+      required:
+      - partner_batch_id
+      - partner_id
+      - samples
+    Sample:
+      type: object
+      properties:
+        partner_record_id:
+          type: string
+          nullable: true
+        sample_code:
+          type: string
+          maxLength: 60
+        sampling_date:
+          type: string
+          format: date
+          nullable: true
+        year:
+          type: integer
+        stage:
+          type: integer
+          default: 1
+        lab_number:
+          type: string
+          maxLength: 50
+        company_external_code:
+          type: string
+          nullable: true
+          maxLength: 100
+        laboratory_external_code:
+          type: string
+          nullable: true
+          maxLength: 100
+        trial_external_code:
+          type: string
+          nullable: true
+          maxLength: 100
+        extra: {}
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SampleResult'
+      required:
+      - lab_number
+      - results
+      - sample_code
+      - year
+    SampleResult:
+      type: object
+      properties:
+        indicator:
+          type: string
+          maxLength: 100
+        method:
+          type: string
+          nullable: true
+          maxLength: 100
+        unit:
+          type: string
+          nullable: true
+          maxLength: 100
+        value_numeric:
+          type: number
+          format: double
+          nullable: true
+        value_text:
+          type: string
+          nullable: true
+          maxLength: 200
+        extra: {}
+      required:
+      - indicator
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
