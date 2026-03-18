@@ -7,22 +7,30 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Caminho base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Carrega variáveis do .env na raiz do projeto
+# -------------------------------------------------------
+# ENV
+# -------------------------------------------------------
 load_dotenv(BASE_DIR / ".env")
 
-# Segurança / debug
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 
-ALLOWED_HOSTS: list[str] = ["*"]  # em dev, tudo liberado
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-# URL de conexão PostgreSQL para o ETL (usada pelo psycopg2 nas views)
+ALLOWED_HOSTS = os.getenv(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost"
+).split(",")
+
+# -------------------------------------------------------
+# DATABASE URL PARA ETL (psycopg2 nas views)
+# -------------------------------------------------------
 PG_URL = os.getenv("PG_URL")
 
-# Apps instalados
+# -------------------------------------------------------
+# APPS
+# -------------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -31,18 +39,22 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Terceiros
     "rest_framework",
     "corsheaders",
+    "drf_spectacular",
 
-    # Apps do projeto
-    "api_etl",
+    "api_etl.apps.ApiEtlConfig",
 ]
 
-# Middleware
+# -------------------------------------------------------
+# MIDDLEWARE
+# -------------------------------------------------------
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # CORS no topo
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
+    "corsheaders.middleware.CorsMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -51,15 +63,14 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# CORS – em desenvolvimento, libera tudo
 CORS_ALLOW_ALL_ORIGINS = True
 
+# -------------------------------------------------------
 ROOT_URLCONF = "etl_api.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -73,53 +84,56 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "etl_api.wsgi.application"
 
+# -------------------------------------------------------
+# DATABASE DJANGO (apenas admin/migrate)
+# pode usar sqlite local
+# -------------------------------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'dbadmin2025!',
-        'HOST': 'db.eeuzmrjnzuhecyhbxcxe.supabase.co',  # copie do painel Supabase
-        'PORT': '5432',
-        'OPTIONS': {'sslmode': 'require'},
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
-# PG_URL=postgresql+psycopg2://postgres.eeuzmrjnzuhecyhbxcxe:dbadmin2025!@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
-
-
-# Validação de senha
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
+# -------------------------------------------------------
+# REST
+# -------------------------------------------------------
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'api_etl.authentication.APIKeyAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api_etl.authentication.APIKeyAuthentication",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-# Internacionalização
+# -------------------------------------------------------
+# SPECTACULAR
+# -------------------------------------------------------
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ETL API - Lab Intake",
+    "DESCRIPTION": "API de ingestão batch",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+# -------------------------------------------------------
+# I18N
+# -------------------------------------------------------
 LANGUAGE_CODE = "pt-br"
 TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
 USE_TZ = True
 
-# Arquivos estáticos
-STATIC_URL = "static/"
+# -------------------------------------------------------
+# STATIC
+# -------------------------------------------------------
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

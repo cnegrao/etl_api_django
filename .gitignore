@@ -1,0 +1,24 @@
+# ambiente virtual
+venv/
+
+# variáveis sensíveis
+.env
+
+# banco local
+db.sqlite3
+
+# cache python
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+
+# logs
+*.log
+
+# arquivos temporários
+*.tmp
+
+openapi.json
+payload_test.json

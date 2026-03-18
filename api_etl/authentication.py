@@ -1,34 +1,27 @@
-from django.utils import timezone
-from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
-from .models import APIKey
+API_KEY = "A7F3K9P2X6M4Q8Z1"
+
+
+class APIKeyUser:
+    is_authenticated = True
+
+    def __str__(self):
+        return "api-key-user"
 
 
 class APIKeyAuthentication(BaseAuthentication):
-    """
-    Autenticação simples baseada em cabeçalho Authorization: Api-Key <key>
-    """
-
-    keyword = "Api-Key"
-
     def authenticate(self, request):
-        auth_header = request.headers.get("Authorization")
+        key = request.headers.get("X-API-Key")
 
-        if not auth_header or not auth_header.startswith(self.keyword):
-            return None  # sem header -> DRF tenta outras autenticações
+        if not key:
+            raise AuthenticationFailed("API key não enviada")
 
-        key_value = auth_header[len(self.keyword):].strip()
+        if key != API_KEY:
+            raise AuthenticationFailed("API key inválida")
 
-        try:
-            api_key = APIKey.objects.get(key=key_value, is_active=True)
-        except APIKey.DoesNotExist:
-            raise exceptions.AuthenticationFailed(
-                "Invalid or inactive API key")
+        return (APIKeyUser(), None)
 
-        # Atualiza último uso
-        api_key.last_used_at = timezone.now()
-        api_key.save(update_fields=["last_used_at"])
-
-        # Autenticação não tem user real, mas você pode retornar um placeholder
-        return (None, api_key)
+    def authenticate_header(self, request):
+        return "X-API-Key"
