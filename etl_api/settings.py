@@ -98,6 +98,7 @@ DATABASES = {
 # -------------------------------------------------------
 # REST
 # -------------------------------------------------------
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "api_etl.authentication.APIKeyAuthentication",
@@ -108,6 +109,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+
 # -------------------------------------------------------
 # SPECTACULAR
 # -------------------------------------------------------
@@ -116,6 +118,8 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API de ingestão batch",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    "SERVE_AUTHENTICATION": [],
 }
 
 # -------------------------------------------------------
