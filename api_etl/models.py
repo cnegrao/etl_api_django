@@ -60,17 +60,50 @@ class ETLStageSampleIntake(models.Model):
 
 class ETLStageSampleIntakeValue(models.Model):
     """
-    Valores analíticos recebidos (mensurandos, unidades, métodos, etc.)
+    Valores analíticos recebidos.
     """
+
     stage_sampleintake = models.ForeignKey(
-        ETLStageSampleIntake, on_delete=models.CASCADE)
-    indicator_code = models.CharField(max_length=100)
-    method_code = models.CharField(max_length=100, null=True, blank=True)
-    unit_code = models.CharField(max_length=100, null=True, blank=True)
+        ETLStageSampleIntake,
+        on_delete=models.CASCADE
+    )
+
+    indicator_code = models.CharField(
+        max_length=100,
+        db_column="indicator"
+    )
+
+    method_code = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        db_column="method"
+    )
+
+    unit_code = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        db_column="unit"
+    )
+
     value_numeric = models.DecimalField(
-        max_digits=12, decimal_places=6, null=True, blank=True)
-    value_text = models.CharField(max_length=200, null=True, blank=True)
-    extra = models.JSONField(null=True, blank=True)
+        max_digits=12,
+        decimal_places=6,
+        null=True,
+        blank=True
+    )
+
+    value_text = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True
+    )
+
+    extra = models.JSONField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         db_table = "etl_stage_sampleintake_value"

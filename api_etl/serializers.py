@@ -34,6 +34,6 @@ class SampleSerializer(serializers.Serializer):
 
 
 class BatchSerializer(serializers.Serializer):
-    partner_id = serializers.IntegerField()
+    partner_id = serializers.CharField(max_length=50)
     partner_batch_id = serializers.CharField(max_length=100)
     samples = SampleSerializer(many=True)
